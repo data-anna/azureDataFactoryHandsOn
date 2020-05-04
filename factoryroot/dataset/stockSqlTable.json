@@ -1,0 +1,60 @@
+{
+	"name": "stockSqlTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "outputSqlDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "symbol",
+				"type": "varchar"
+			},
+			{
+				"name": "stockDate",
+				"type": "date"
+			},
+			{
+				"name": "openPrice",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 3
+			},
+			{
+				"name": "highPrice",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 3
+			},
+			{
+				"name": "lowPrice",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 3
+			},
+			{
+				"name": "closePrice",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 3
+			},
+			{
+				"name": "volume",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "adjClose",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "appl_stock"
+		}
+	}
+}

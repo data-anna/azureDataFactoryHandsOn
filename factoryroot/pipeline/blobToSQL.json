@@ -1,6 +1,142 @@
 {
 	"name": "blobToSQL",
 	"properties": {
+		"activities": [
+			{
+				"name": "stockCSVtoSQL",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "symbol",
+								"value": "APPL"
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "DELETE FROM appl_stock",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "symbol",
+									"type": "String"
+								},
+								"sink": {
+									"name": "symbol",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "stockDate",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "Open",
+									"type": "String"
+								},
+								"sink": {
+									"name": "openPrice",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "High",
+									"type": "String"
+								},
+								"sink": {
+									"name": "highPrice",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Low",
+									"type": "String"
+								},
+								"sink": {
+									"name": "lowPrice",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Close",
+									"type": "String"
+								},
+								"sink": {
+									"name": "closePrice",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "Volume",
+									"type": "String"
+								},
+								"sink": {
+									"name": "volume",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "Adj Close",
+									"type": "String"
+								},
+								"sink": {
+									"name": "adjClose",
+									"type": "Decimal"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "stockCSV",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "stockSqlTable",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
 		"annotations": []
 	}
 }
