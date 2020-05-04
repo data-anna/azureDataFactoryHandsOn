@@ -5,11 +5,14 @@
 		"factoryName": {
 			"value": "dataFactoryLbrmn"
 		},
-		"myAzureKeyVault_properties_typeProperties_baseUrl": {
-			"value": "https://lbrmnKeyVault.vault.azure.net/"
+		"outputSqlDatabase_connectionString": {
+			"value": ""
 		},
 		"inputBlob_properties_typeProperties_connectionString_secretName": {
 			"value": "storage4lbrmnSecret"
+		},
+		"myAzureKeyVault_properties_typeProperties_baseUrl": {
+			"value": "https://lbrmnKeyVault.vault.azure.net/"
 		},
 		"containerUri": {
 			"value": ""

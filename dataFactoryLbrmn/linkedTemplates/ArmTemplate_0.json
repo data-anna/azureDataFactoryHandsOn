@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dataFactoryLbrmn"
 		},
+		"outputSqlDatabase_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'outputSqlDatabase'"
+		},
 		"myAzureKeyVault_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://lbrmnKeyVault.vault.azure.net/"
@@ -48,6 +52,29 @@
 							"type": "LinkedServiceReference"
 						},
 						"secretName": "[parameters('inputBlob_properties_typeProperties_connectionString_secretName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/myAzureKeyVault')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/outputSqlDatabase')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('outputSqlDatabase_connectionString')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "myAzureKeyVault",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "lbrmnSQLSecret"
 					}
 				}
 			},
@@ -110,6 +137,221 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/inputBlob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/stockSqlTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "outputSqlDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "symbol",
+						"type": "varchar"
+					},
+					{
+						"name": "stockDate",
+						"type": "date"
+					},
+					{
+						"name": "openPrice",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "highPrice",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "lowPrice",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "closePrice",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "volume",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "adjClose",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "appl_stock"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/outputSqlDatabase')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/blobToSQL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "stockCSVtoSQL",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"additionalColumns": [
+									{
+										"name": "symbol",
+										"value": "APPL"
+									}
+								],
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "DELETE FROM appl_stock",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "symbol",
+											"type": "String"
+										},
+										"sink": {
+											"name": "symbol",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "stockDate",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "Open",
+											"type": "String"
+										},
+										"sink": {
+											"name": "openPrice",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "High",
+											"type": "String"
+										},
+										"sink": {
+											"name": "highPrice",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "Low",
+											"type": "String"
+										},
+										"sink": {
+											"name": "lowPrice",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "Close",
+											"type": "String"
+										},
+										"sink": {
+											"name": "closePrice",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "Volume",
+											"type": "String"
+										},
+										"sink": {
+											"name": "volume",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "Adj Close",
+											"type": "String"
+										},
+										"sink": {
+											"name": "adjClose",
+											"type": "Decimal"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "stockCSV",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "stockSqlTable",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/stockCSV')]",
+				"[concat(variables('factoryId'), '/datasets/stockSqlTable')]"
 			]
 		}
 	]

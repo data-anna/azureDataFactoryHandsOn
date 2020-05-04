@@ -7,13 +7,17 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dataFactoryLbrmn"
 		},
-		"myAzureKeyVault_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://lbrmnKeyVault.vault.azure.net/"
+		"outputSqlDatabase_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'outputSqlDatabase'"
 		},
 		"inputBlob_properties_typeProperties_connectionString_secretName": {
 			"type": "string",
 			"defaultValue": "storage4lbrmnSecret"
+		},
+		"myAzureKeyVault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://lbrmnKeyVault.vault.azure.net/"
 		},
 		"containerUri": {
 			"type": "string",
@@ -41,6 +45,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"outputSqlDatabase_connectionString": {
+						"value": "[parameters('outputSqlDatabase_connectionString')]"
 					},
 					"myAzureKeyVault_properties_typeProperties_baseUrl": {
 						"value": "[parameters('myAzureKeyVault_properties_typeProperties_baseUrl')]"
