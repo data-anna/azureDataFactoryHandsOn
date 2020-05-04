@@ -1,0 +1,19 @@
+{
+	"name": "outputSqlDatabase",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=server4lbrmn.database.windows.net;Initial Catalog=lbrmnDB;User ID=admin4lbrmn",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "myAzureKeyVault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "lbrmnSQLSecret"
+			}
+		}
+	}
+}
