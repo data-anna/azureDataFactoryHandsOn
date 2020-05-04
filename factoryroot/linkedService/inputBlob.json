@@ -1,0 +1,17 @@
+{
+	"name": "inputBlob",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"connectionString": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "myAzureKeyVault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "storage4lbrmnSecret"
+			}
+		}
+	}
+}
