@@ -1,0 +1,52 @@
+{
+	"name": "stockCSV",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "inputBlob",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "appl_stock.csv",
+				"container": "inputblob"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Date",
+				"type": "String"
+			},
+			{
+				"name": "Open",
+				"type": "String"
+			},
+			{
+				"name": "High",
+				"type": "String"
+			},
+			{
+				"name": "Low",
+				"type": "String"
+			},
+			{
+				"name": "Close",
+				"type": "String"
+			},
+			{
+				"name": "Volume",
+				"type": "String"
+			},
+			{
+				"name": "Adj Close",
+				"type": "String"
+			}
+		]
+	}
+}
